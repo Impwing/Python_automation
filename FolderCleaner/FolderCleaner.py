@@ -5,15 +5,12 @@
 import os
 
 def _FolderCleaner_():
-    #Change the working directory
-    os.chdir("/home/sc/")
+
+    os.chdir("/home/steven/")
     #Setup variables
     downloads = "Downloads/"
     dir = os.listdir(downloads)
-
-    #if Files/ doens't exist then create it
-    if(not os.path.exists("Files/")):
-        os.mkdir("Files/");
+    print(dir)
 
     #loop through all the files
     for file in dir:
@@ -22,7 +19,7 @@ def _FolderCleaner_():
 
         #Split the extension and just get the final characters
         destination = file_extension.split(".")
-        destination = "Files/" + file_extension.split(".")[1] + "/"
+        destination = downloads + file_extension.split(".")[1] + "/"
 
         #If the path for the file does not exist
         if(not os.path.exists(destination)):        
