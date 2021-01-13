@@ -20,6 +20,7 @@ class Container:
     def setupEnvironment(self):
         os.chdir(Path.home())
         if os.path.exists(defaults.STORE_PATH):
+            print("environment already setup")
             return
         else:
             os.mkdir(Defaults().STORE_PATH)
@@ -41,6 +42,14 @@ class Librarian:
             if file.__contains__(".conf"):
                 continue
             print(file.split(".")[0])
+
+    def numberOfBooksInPath(self, path):
+        files = os.listdir(path)
+        bookCount = 0
+        for file in files:
+            if self.__validateFileType__(file):
+                bookCount += 1
+        return bookCount
 
     def sort(self):
         files = os.listdir(defaults.SEARCH_PATH)
@@ -98,10 +107,45 @@ class Librarian:
         fileSizeInBytes = os.path.getsize(defaults.SEARCH_PATH + file)
         return fileSizeInBytes / (1024*1024)
 
+    def __validateFileType__(self, file):
+        valid = False
+        if file.__contains__(".mobi"):
+            valid = True
+        elif file.__contains__(".pdf"):
+            #if self.__validateFileSize__(file) > defaults.FILE_SIZE:
+            valid = True
+        elif file.__contains__(".epub"):
+            valid = True
+        return valid
+
     def __storeFile__(self, file):
         origin = defaults.SEARCH_PATH + file
         destination = defaults.STORE_PATH + file
         os.rename(origin, destination)
+
+
+class Bookshelf:
+    def __init__(self):
+        self.container = Container()
+        self.librarian = Librarian()
+
+    def list(self):
+        self.librarian.list()
+
+    def setup(self):
+        self.container.setupEnvironment()
+
+    def sort(self):
+        self.librarian.sort()
+
+    def toKindle(self):
+        self.librarian.copyToKindle()
+
+    def numberOfBooksInShelf(self):
+        return self.librarian.numberOfBooksInPath(defaults.STORE_PATH)
+
+    def numberOfBooksToMove(self):
+        return self.librarian.numberOfBooksInPath(defaults.SEARCH_PATH)
 
 
 def __main__(argv):
