@@ -1,4 +1,4 @@
-# EBook Handler
+# E-book Handler
 Ebook handler is a simple python program that will move your recently
 downloaded ebooks from ```~/Downloads/``` to ```~/bookshelf/```. The program
 can also move over all of the books that you have stored locally to your kindle.
