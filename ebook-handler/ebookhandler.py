@@ -75,10 +75,9 @@ class Librarian:
             print("kindle is not detected")
             return
 
-        shouldCopy = False
+        shouldCopy = True
         kindleBooks = list()
         self.__loopAndStore__(kindlePath, kindleBooks, shouldCopy)
-
         files = os.listdir(defaults.STORE_PATH)
         for rawFile in files:
             file = rawFile.split(".")[0]
@@ -88,6 +87,7 @@ class Librarian:
                 continue
             if kindleBooks.__contains__(file):
                 continue
+            print("is copying: {}".format(file))
             copyfile(defaults.STORE_PATH + rawFile, kindlePath + rawFile)
 
     def __loopAndStore__(self, path, dest, shouldCopy):

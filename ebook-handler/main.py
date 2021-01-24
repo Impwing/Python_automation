@@ -10,7 +10,7 @@ from ebookhandler import Bookshelf
 WIDTH = 256
 HEIGHT = 512
 KINDLE_PATH = "/Volumes/Kindle/"
-KINDLE_DISABLED = True
+TRANSFERING = False
 
 
 class Gui:
@@ -28,13 +28,12 @@ class EbookHandler(Widget):
     def __init__(self, **kwargs):
         super(EbookHandler, self).__init__(**kwargs)
         self.kindleDisabled = True
+        self.isTransfering = False
         self.bookshelf = Bookshelf()
         self.bookshelf.setup()
         self.gui = Gui(self.ids)
         self.setup()
-        if self.kindleDisabled:
-            self.pollThread = threading.Thread(target=self.pollDevice, daemon=True)
-            self.pollThread.start()
+        self.__setThreads__()
 
     def findKindle(self):
         if os.path.isdir(KINDLE_PATH):
@@ -49,17 +48,18 @@ class EbookHandler(Widget):
             self.findKindle()
             time.sleep(2)
             self.setup()
-        return False
 
     def sort(self):
         self.bookshelf.sort()
         self.setup()
 
-    #def list(self):
-        #self.bookshelf.list()
-
-    def transfer(self):
-        self.bookshelf.toKindle()
+    def toKindle(self):
+        if self.isTransfering is True:
+            return
+        else:
+            self.isTransfering = True
+            self.transferThread = threading.Thread(target=self.__transfer__, daemon=True)
+            self.transferThread.run()
 
     def setup(self):
         self.__setGui__()
@@ -74,8 +74,17 @@ class EbookHandler(Widget):
     def __setButtons__(self):
         self.gui.getGuiItem('sort').on_press = self.sort
         self.gui.getGuiItem('to_kindle').disabled = self.kindleDisabled
-        self.gui.getGuiItem('to_kindle').on_press = self.transfer
-        #self.gui.getGuiItem('list').on_press = self.list
+        self.gui.getGuiItem('to_kindle').on_press = self.toKindle
+
+    def __setThreads__(self):
+        self.pollThread = threading.Thread(target=self.pollDevice, daemon=True)
+        self.pollThread.start()
+
+    def __transfer__(self):
+        print("Transfer Initiated")
+        self.bookshelf.toKindle()
+        print("Transfer Complete")
+        self.isTransfering = False
 
 
 class EbookHandlerApp(App):
